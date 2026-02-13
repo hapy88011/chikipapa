@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ちきパパ式 住宅ローンシミュレーター | 借入可能額を計算</title>
+    <meta name="description" content="金利・返済方法・借入年数・家賃額から借入可能額を簡単シミュレーション。元利均等・元金均等に対応。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-input: #f5f7fa;
+            --border-color: #e0e6ed;
+            --border-focus: #4d8bff;
+            --text-primary: #1a2332;
+            --text-secondary: #506680;
+            --text-muted: #8a9bb5;
+            --accent-blue: #4d8bff;
+            --accent-cyan: #00b4d8;
+            --accent-purple: #7c5cfc;
+            --accent-gradient: linear-gradient(135deg, #4d8bff, #00b4d8);
+            --accent-gradient-2: linear-gradient(135deg, #7c5cfc, #4d8bff);
+            --result-gradient: linear-gradient(135deg, #00b4d8, #4d8bff, #7c5cfc);
+            --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.06);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        /* Background illustration */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('bg-illustration.jpg') center center / cover no-repeat;
+            opacity: 0.18;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes bgShift {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--accent-gradient);
+            margin-bottom: 16px;
+            font-size: 28px;
+            box-shadow: 0 4px 16px rgba(77, 139, 255, 0.25);
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .label-icon {
+            font-size: 1rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px;
+            padding-right: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            outline: none;
+            transition: var(--transition);
+            -moz-appearance: textfield;
+        }
+
+        .input-wrapper input::-webkit-outer-spin-button,
+        .input-wrapper input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-wrapper input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(77, 139, 255, 0.12);
+            background: #fff;
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Radio Toggle */
+        .toggle-group {
+            display: flex;
+            gap: 0;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .toggle-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .toggle-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            border-right: 1px solid var(--border-color);
+            user-select: none;
+        }
+
+        .toggle-option:last-child label {
+            border-right: none;
+        }
+
+        .toggle-option input[type="radio"]:checked+label {
+            background: var(--accent-gradient-2);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle-option label:hover {
+            color: var(--text-primary);
+            background: rgba(77, 139, 255, 0.05);
+        }
+
+        .toggle-option input[type="radio"]:checked+label:hover {
+            color: #fff;
+            background: var(--accent-gradient-2);
+        }
+
+        /* Calculate Button */
+        .btn-calculate {
+            width: 100%;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            color: #fff;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-calculate::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(77, 139, 255, 0.3);
+        }
+
+        .btn-calculate:hover::before {
+            opacity: 1;
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        /* Result Section */
+        .result-section {
+            margin-top: 24px;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .result-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f0f6ff, #f5f0ff);
+            border: 1px solid rgba(77, 139, 255, 0.15);
+            border-radius: var(--radius);
+            padding: 28px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .result-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: var(--result-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 4px;
+            animation: resultPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes resultPulse {
+
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(1.1);
+            }
+        }
+
+        .result-unit {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--result-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-details {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .detail-item {
+            background: #ffffff;
+            border: 1px solid #e8edf3;
+            border-radius: var(--radius-xs);
+            padding: 14px 12px;
+            text-align: center;
+        }
+
+        .detail-item .detail-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .detail-item .detail-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .detail-item-full {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #eef4ff, #f0ecff);
+            border-color: rgba(77, 139, 255, 0.15);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Character illustrations */
+        .char {
+            position: absolute;
+            z-index: 2;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+            transition: none;
+        }
+
+        .char.visible {
+            animation: charPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes charPopIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .char-papa {
+            width: 85px;
+            top: 10px;
+            left: 15px;
+            animation-delay: 0.1s;
+        }
+
+        .char-girl {
+            width: 95px;
+            top: 8px;
+            right: 15px;
+        }
+
+        .char-boy {
+            width: 70px;
+            top: 22px;
+            left: 90px;
+            animation-delay: 0.2s;
+        }
+
+        .result-card {
+            position: relative;
+            overflow: visible;
+        }
+
+        /* Papa2 pre-calculation illustration */
+        .papa2-section {
+            text-align: center;
+            padding: 30px 0 10px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .papa2-section.hidden {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .papa2-section img {
+            width: 520px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+        }
+
+        /* Responsive */
+        @media (max-width: 780px) {
+            .char-papa {
+                left: -100px;
+                width: 80px;
+            }
+
+            .char-girl {
+                right: -105px;
+                width: 85px;
+            }
+
+            .char-boy {
+                left: -25px;
+                width: 65px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .char-papa {
+                width: 55px;
+                top: 15px;
+                left: 5px;
+            }
+
+            .char-girl {
+                width: 60px;
+                top: 12px;
+                right: 5px;
+            }
+
+            .char-boy {
+                width: 45px;
+                top: 30px;
+                left: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .result-amount {
+                font-size: 2rem;
+            }
+
+            .toggle-option label {
+                font-size: 0.82rem;
+                padding: 12px 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-icon">🏠</div>
+            <h1>ちきパパ式<br>住宅ローンシミュレーター</h1>
+            <p>家賃から借入可能額を逆算します</p>
+        </header>
+
+        <div class="card">
+            <!-- 金利 -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span class="label-icon">📊</span>
+                    金利（年利）
+                </div>
+                <div class="input-wrapper">
+                    <input type="number" id="interestRate" step="0.01" min="0" placeholder="1.50" value="">
+                    <span class="input-suffix">％</span>
+                </div>
+            </div>
+
+            <!-- 返済方法 -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span class="label-icon">🔄</span>
+                    返済方法
+                </div>
+                <div class="toggle-group">
+                    <div class="toggle-option">
+                        <input type="radio" id="ganrikintoRadio" name="repaymentType" value="ganrikinto" checked>
+                        <label for="ganrikintoRadio">元利均等</label>
+                    </div>
+                    <div class="toggle-option">
+                        <input type="radio" id="gankinkintoRadio" name="repaymentType" value="gankinkinto">
+                        <label for="gankinkintoRadio">元金均等</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 借入年数 -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span class="label-icon">📅</span>
+                    借入年数
+                </div>
+                <div class="input-wrapper">
+                    <input type="number" id="loanYears" min="1" max="50" placeholder="35" value="">
+                    <span class="input-suffix">年</span>
+                </div>
+            </div>
+
+            <!-- 家賃 -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span class="label-icon">💰</span>
+                    <span id="rentLabel">現在の家賃</span>
+                </div>
+                <div class="input-wrapper">
+                    <input type="number" id="monthlyRent" min="0" step="1000" placeholder="100,000" value="">
+                    <span class="input-suffix">円</span>
+                </div>
+            </div>
+
+            <!-- 計算ボタン -->
+            <button class="btn-calculate" id="calculateBtn" onclick="calculate()">
+                借入可能額を計算する
+            </button>
+
+            <!-- 計算前のちきパパ -->
+            <div class="papa2-section" id="papa2Section">
+                <img src="char-papa2.png" alt="ちきパパ">
+            </div>
+
+            <!-- 結果 -->
+            <div class="result-section" id="resultSection">
+                <div class="result-card">
+                    <div class="result-label">借入可能額（概算）</div>
+                    <div>
+                        <span class="result-amount" id="resultAmount">0</span>
+                        <span class="result-unit">万円</span>
+                    </div>
+                    <!-- Character illustrations -->
+                    <img src="char-papa.png" alt="" class="char char-papa" id="charPapa">
+                    <img src="char-boy.png" alt="" class="char char-boy" id="charBoy">
+                    <img src="char-girl.png" alt="" class="char char-girl" id="charGirl">
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <div class="detail-label">毎月の返済額</div>
+                            <div class="detail-value" id="detailMonthly">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">総返済額</div>
+                            <div class="detail-value" id="detailTotal">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">利息総額</div>
+                            <div class="detail-value" id="detailInterest">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">返済方法</div>
+                            <div class="detail-value" id="detailMethod">-</div>
+                        </div>
+                        <div class="detail-item detail-item-full">
+                            <div class="detail-label">この額を借りた時の諸費用（概算）</div>
+                            <div class="detail-value" id="detailExpenses">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            ※ 本シミュレーションは概算です。実際の借入条件は金融機関にご確認ください。<br>
+            ※ 諸費用・税金・保険料等は含まれておりません。
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const rateInput = document.getElementById('interestRate');
+            const yearsInput = document.getElementById('loanYears');
+            const rentInput = document.getElementById('monthlyRent');
+            const methodEl = document.querySelector('input[name="repaymentType"]:checked');
+
+            const annualRate = parseFloat(rateInput.value);
+            const years = parseInt(yearsInput.value);
+            const monthlyRent = parseFloat(rentInput.value);
+            const method = methodEl.value;
+
+            // Validation
+            if (isNaN(annualRate) || annualRate <= 0) {
+                shakeInput(rateInput);
+                return;
+            }
+            if (isNaN(years) || years <= 0) {
+                shakeInput(yearsInput);
+                return;
+            }
+            if (isNaN(monthlyRent) || monthlyRent <= 0) {
+                shakeInput(rentInput);
+                return;
+            }
+
+            const monthlyRate = annualRate / 100 / 12;
+            const totalMonths = years * 12;
+            let loanAmount = 0;
+
+            if (method === 'ganrikinto') {
+                // 元利均等返済: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+                // → P = M * [(1+r)^n - 1] / [r(1+r)^n]
+                const factor = Math.pow(1 + monthlyRate, totalMonths);
+                loanAmount = monthlyRent * (factor - 1) / (monthlyRate * factor);
+            } else {
+                // 元金均等返済: 初回返済額 = P/n + P*r = P(1/n + r)
+                // → P = M / (1/n + r)
+                loanAmount = monthlyRent / (1 / totalMonths + monthlyRate);
+            }
+
+            // 万円単位に（切り捨て）
+            const loanInManyen = Math.floor(loanAmount / 10000);
+
+            // 総返済額の計算
+            let totalPayment = 0;
+            if (method === 'ganrikinto') {
+                totalPayment = monthlyRent * totalMonths;
+            } else {
+                // 元金均等: 各月の返済額 = P/n + 残元金 * r
+                const principalPerMonth = loanAmount / totalMonths;
+                for (let i = 0; i < totalMonths; i++) {
+                    const remainingPrincipal = loanAmount - principalPerMonth * i;
+                    totalPayment += principalPerMonth + remainingPrincipal * monthlyRate;
+                }
+            }
+
+            const totalInterest = totalPayment - loanAmount;
+
+            // Display results — hide papa2, show result
+            document.getElementById('papa2Section').classList.add('hidden');
+            const resultSection = document.getElementById('resultSection');
+            resultSection.classList.add('visible');
+
+            // Show characters with pop-in animation
+            ['charPapa', 'charBoy', 'charGirl'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove('visible');
+                void el.offsetWidth; // force reflow to restart animation
+                el.classList.add('visible');
+            });
+
+            // Animate the number
+            animateNumber('resultAmount', loanInManyen);
+
+            document.getElementById('detailMonthly').textContent = formatYen(monthlyRent);
+            document.getElementById('detailTotal').textContent = formatManyen(totalPayment);
+            document.getElementById('detailInterest').textContent = formatManyen(totalInterest);
+            document.getElementById('detailMethod').textContent =
+                method === 'ganrikinto' ? '元利均等' : '元金均等';
+
+            // 諸費用（約7%: 融資手数料、保証料、登記費用、火災保険等）
+            const expenses = loanAmount * 0.07;
+            document.getElementById('detailExpenses').textContent = '約 ' + formatManyen(expenses);
+        }
+
+        function animateNumber(elementId, target) {
+            const el = document.getElementById(elementId);
+            const duration = 800;
+            const startTime = performance.now();
+            const startVal = parseInt(el.textContent.replace(/,/g, '')) || 0;
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(startVal + (target - startVal) * eased);
+                el.textContent = current.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        function formatYen(amount) {
+            return Math.round(amount).toLocaleString() + '円';
+        }
+
+        function formatManyen(amount) {
+            return Math.round(amount / 10000).toLocaleString() + '万円';
+        }
+
+        function shakeInput(input) {
+            input.style.animation = 'shake 0.4s ease';
+            input.style.borderColor = '#ff4d6a';
+            setTimeout(() => {
+                input.style.animation = '';
+                input.style.borderColor = '';
+            }, 600);
+            input.focus();
+        }
+
+        // Add shake keyframes dynamically
+        const shakeStyle = document.createElement('style');
+        shakeStyle.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+      }
+    `;
+        document.head.appendChild(shakeStyle);
+
+        // Enter key to calculate
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') calculate();
+        });
+
+        // Toggle rent label based on repayment method
+        document.querySelectorAll('input[name="repaymentType"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const label = document.getElementById('rentLabel');
+                if (radio.value === 'gankinkinto') {
+                    label.textContent = '初月の返済額';
+                } else {
+                    label.textContent = '現在の家賃';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

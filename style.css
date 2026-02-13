@@ -1,0 +1,387 @@
+/* ================================
+   ベース & リセット
+   ================================ */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
+    color: #e2e8f0;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* ================================
+   ヘッダー
+   ================================ */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.logo {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    letter-spacing: 0.2em;
+}
+
+/* ================================
+   カード
+   ================================ */
+.card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 20px;
+    padding: 36px 32px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+
+/* ================================
+   フォーム
+   ================================ */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #cbd5e1;
+    margin-bottom: 10px;
+}
+
+.label-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 60px 14px 18px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 18px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-input:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+
+.form-input::placeholder {
+    color: #475569;
+}
+
+.input-suffix {
+    position: absolute;
+    right: 18px;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+/* ================================
+   ラジオボタン
+   ================================ */
+.radio-group {
+    display: flex;
+    gap: 12px;
+}
+
+.radio-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+}
+
+.radio-option:hover {
+    border-color: rgba(129, 140, 248, 0.4);
+}
+
+.radio-option.selected {
+    border-color: #818cf8;
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.radio-option input[type="radio"] {
+    display: none;
+}
+
+.radio-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #475569;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.3s;
+}
+
+.radio-option.selected .radio-box {
+    border-color: #818cf8;
+}
+
+.radio-option.selected .radio-box::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    background: #818cf8;
+    border-radius: 50%;
+}
+
+.radio-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.radio-text strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.radio-text small {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ================================
+   計算ボタン
+   ================================ */
+.calc-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin-top: 8px;
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.calc-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.45);
+}
+
+.calc-btn:active {
+    transform: translateY(0);
+}
+
+/* ================================
+   結果カード
+   ================================ */
+.result-card {
+    margin-top: 28px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 20px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.result-card.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.result-header {
+    text-align: center;
+    padding: 36px 32px 28px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(192, 132, 252, 0.08));
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.result-label {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+}
+
+.result-amount {
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+
+.result-unit {
+    font-size: 18px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.result-details {
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.result-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-label {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.detail-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #e2e8f0;
+}
+
+/* ================================
+   フッター
+   ================================ */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.footer p {
+    font-size: 11px;
+    color: #475569;
+    line-height: 1.8;
+}
+
+.copyright {
+    margin-top: 8px;
+    color: #334155 !important;
+}
+
+/* ================================
+   レスポンシブ
+   ================================ */
+@media (max-width: 480px) {
+    .container {
+        padding: 24px 16px;
+    }
+
+    .card {
+        padding: 28px 20px;
+    }
+
+    .logo {
+        font-size: 28px;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .result-amount {
+        font-size: 44px;
+    }
+
+    .result-details {
+        padding: 20px;
+    }
+}
+
+/* number input の上下矢印を消す */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
