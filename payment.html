@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ちきパパ式 住宅ローンシミュレーター | 借入可能額を計算</title>
-    <meta name="description" content="金利・返済方法・借入年数・家賃額から借入可能額を簡単シミュレーション。元利均等・元金均等に対応。">
+    <title>ちきパパ式 月々返済額シミュレーター | 借入額から月々の支払いを計算</title>
+    <meta name="description" content="借入金額・金利・借入年数から月々の返済額を簡単シミュレーション。元利均等返済で計算。">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -68,23 +68,6 @@
             opacity: 0.18;
             z-index: 0;
             pointer-events: none;
-        }
-
-        @keyframes bgShift {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.7;
-                transform: scale(1.1);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
         }
 
         .container {
@@ -327,6 +310,8 @@
             border-radius: var(--radius);
             padding: 28px;
             text-align: center;
+            position: relative;
+            overflow: visible;
         }
 
         .result-label {
@@ -464,11 +449,6 @@
             animation-delay: 0.2s;
         }
 
-        .result-card {
-            position: relative;
-            overflow: visible;
-        }
-
         /* Papa2 pre-calculation illustration */
         .papa2-section {
             text-align: center;
@@ -488,6 +468,28 @@
         .papa2-section img {
             width: 130px;
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+        }
+
+        /* Nav link */
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            background: rgba(77, 139, 255, 0.08);
+            border: 1px solid rgba(77, 139, 255, 0.2);
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            background: rgba(77, 139, 255, 0.15);
+            transform: translateY(-1px);
         }
 
         /* Responsive */
@@ -544,11 +546,6 @@
             .result-amount {
                 font-size: 2rem;
             }
-
-            .toggle-option label {
-                font-size: 0.82rem;
-                padding: 12px 6px;
-            }
         }
     </style>
 </head>
@@ -556,26 +553,38 @@
 <body>
     <div class="container">
         <header class="header">
-            <div class="header-icon">🏠</div>
-            <h1>ちきパパ式<br>住宅ローンシミュレーター</h1>
-            <p>家賃から借入可能額を逆算します</p>
+            <div class="header-icon">💴</div>
+            <h1>ちきパパ式<br>月々返済額シミュレーター</h1>
+            <p>借入額から月々の返済額を計算します</p>
             <nav style="display:flex;justify-content:center;gap:8px;margin-top:18px;">
-                <span
-                    style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;font-size:0.85rem;font-weight:700;color:#fff;background:var(--accent-gradient);border-radius:var(--radius-sm);cursor:default;">🏠
-                    家賃から逆算</span>
-                <a href="payment.html"
+                <a href="index.html"
                     style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;font-size:0.85rem;font-weight:600;color:var(--accent-blue);background:rgba(77,139,255,0.08);border:1px solid rgba(77,139,255,0.2);border-radius:var(--radius-sm);text-decoration:none;transition:var(--transition);"
                     onmouseover="this.style.background='rgba(77,139,255,0.15)'"
-                    onmouseout="this.style.background='rgba(77,139,255,0.08)'">💴 月々の返済額</a>
+                    onmouseout="this.style.background='rgba(77,139,255,0.08)'">🏠 家賃から逆算</a>
+                <span
+                    style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;font-size:0.85rem;font-weight:700;color:#fff;background:var(--accent-gradient);border-radius:var(--radius-sm);cursor:default;">💴
+                    月々の返済額</span>
             </nav>
         </header>
 
         <div class="card">
+            <!-- 借入金額 -->
+            <div class="form-group">
+                <div class="form-label">
+                    <span class="label-icon">🏦</span>
+                    借入金額
+                </div>
+                <div class="input-wrapper">
+                    <input type="number" id="loanAmount" min="0" step="10" placeholder="3,000" value="">
+                    <span class="input-suffix">万円</span>
+                </div>
+            </div>
+
             <!-- 金利 -->
             <div class="form-group">
                 <div class="form-label">
                     <span class="label-icon">📊</span>
-                    金利（年利）
+                    金利（年利・固定）
                 </div>
                 <div class="input-wrapper">
                     <input type="number" id="interestRate" step="0.01" min="0" placeholder="1.50" value="">
@@ -613,21 +622,9 @@
                 </div>
             </div>
 
-            <!-- 家賃 -->
-            <div class="form-group">
-                <div class="form-label">
-                    <span class="label-icon">💰</span>
-                    <span id="rentLabel">現在の家賃</span>
-                </div>
-                <div class="input-wrapper">
-                    <input type="number" id="monthlyRent" min="0" step="1000" placeholder="100,000" value="">
-                    <span class="input-suffix">円</span>
-                </div>
-            </div>
-
             <!-- 計算ボタン -->
             <button class="btn-calculate" id="calculateBtn" onclick="calculate()">
-                借入可能額を計算する
+                月々の返済額を計算する
             </button>
 
             <!-- 計算前のちきパパ -->
@@ -638,10 +635,10 @@
             <!-- 結果 -->
             <div class="result-section" id="resultSection">
                 <div class="result-card">
-                    <div class="result-label">借入可能額（概算）</div>
+                    <div class="result-label">月々の返済額（概算）</div>
                     <div>
                         <span class="result-amount" id="resultAmount">0</span>
-                        <span class="result-unit">万円</span>
+                        <span class="result-unit">円</span>
                     </div>
                     <!-- Character illustrations -->
                     <img src="char-papa.png" alt="" class="char char-papa" id="charPapa">
@@ -649,8 +646,8 @@
                     <img src="char-girl.png" alt="" class="char char-girl" id="charGirl">
                     <div class="result-details">
                         <div class="detail-item">
-                            <div class="detail-label">毎月の返済額</div>
-                            <div class="detail-value" id="detailMonthly">-</div>
+                            <div class="detail-label">借入金額</div>
+                            <div class="detail-value" id="detailLoan">-</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">総返済額</div>
@@ -661,11 +658,15 @@
                             <div class="detail-value" id="detailInterest">-</div>
                         </div>
                         <div class="detail-item">
+                            <div class="detail-label">返済期間</div>
+                            <div class="detail-value" id="detailYears">-</div>
+                        </div>
+                        <div class="detail-item detail-item-full">
                             <div class="detail-label">返済方法</div>
                             <div class="detail-value" id="detailMethod">-</div>
                         </div>
                         <div class="detail-item detail-item-full">
-                            <div class="detail-label">この額を借りた時の諸費用（概算）</div>
+                            <div class="detail-label">諸費用（概算）</div>
                             <div class="detail-value" id="detailExpenses">-</div>
                         </div>
                     </div>
@@ -675,23 +676,27 @@
 
         <div class="footer">
             ※ 本シミュレーションは概算です。実際の借入条件は金融機関にご確認ください。<br>
-            ※ 諸費用・税金・保険料等は含まれておりません。
+            ※ 元利均等・元金均等に対応。金利は全期間固定を想定しています。
         </div>
     </div>
 
     <script>
         function calculate() {
+            const loanInput = document.getElementById('loanAmount');
             const rateInput = document.getElementById('interestRate');
             const yearsInput = document.getElementById('loanYears');
-            const rentInput = document.getElementById('monthlyRent');
             const methodEl = document.querySelector('input[name="repaymentType"]:checked');
 
+            const loanManyen = parseFloat(loanInput.value);
             const annualRate = parseFloat(rateInput.value);
             const years = parseInt(yearsInput.value);
-            const monthlyRent = parseFloat(rentInput.value);
             const method = methodEl.value;
 
             // Validation
+            if (isNaN(loanManyen) || loanManyen <= 0) {
+                shakeInput(loanInput);
+                return;
+            }
             if (isNaN(annualRate) || annualRate <= 0) {
                 shakeInput(rateInput);
                 return;
@@ -700,43 +705,39 @@
                 shakeInput(yearsInput);
                 return;
             }
-            if (isNaN(monthlyRent) || monthlyRent <= 0) {
-                shakeInput(rentInput);
-                return;
-            }
 
+            const loanAmount = loanManyen * 10000; // 万円 → 円
             const monthlyRate = annualRate / 100 / 12;
             const totalMonths = years * 12;
-            let loanAmount = 0;
+
+            let monthlyPayment = 0;
+            let totalPayment = 0;
 
             if (method === 'ganrikinto') {
                 // 元利均等返済: M = P * [r(1+r)^n] / [(1+r)^n - 1]
-                // → P = M * [(1+r)^n - 1] / [r(1+r)^n]
                 const factor = Math.pow(1 + monthlyRate, totalMonths);
-                loanAmount = monthlyRent * (factor - 1) / (monthlyRate * factor);
+                monthlyPayment = loanAmount * (monthlyRate * factor) / (factor - 1);
+                totalPayment = monthlyPayment * totalMonths;
             } else {
-                // 元金均等返済: 初回返済額 = P/n + P*r = P(1/n + r)
-                // → P = M / (1/n + r)
-                loanAmount = monthlyRent / (1 / totalMonths + monthlyRate);
-            }
-
-            // 万円単位に（切り捨て）
-            const loanInManyen = Math.floor(loanAmount / 10000);
-
-            // 総返済額の計算
-            let totalPayment = 0;
-            if (method === 'ganrikinto') {
-                totalPayment = monthlyRent * totalMonths;
-            } else {
-                // 元金均等: 各月の返済額 = P/n + 残元金 * r
+                // 元金均等返済: 初月返済額 = P/n + P*r
                 const principalPerMonth = loanAmount / totalMonths;
+                monthlyPayment = principalPerMonth + loanAmount * monthlyRate; // 初月
+                // 総返済額を正確に計算
                 for (let i = 0; i < totalMonths; i++) {
-                    const remainingPrincipal = loanAmount - principalPerMonth * i;
-                    totalPayment += principalPerMonth + remainingPrincipal * monthlyRate;
+                    const remaining = loanAmount - principalPerMonth * i;
+                    totalPayment += principalPerMonth + remaining * monthlyRate;
                 }
             }
 
             const totalInterest = totalPayment - loanAmount;
+
+            // 結果ラベルを更新
+            const resultLabel = document.querySelector('.result-label');
+            if (method === 'gankinkinto') {
+                resultLabel.textContent = '初月の返済額（概算）';
+            } else {
+                resultLabel.textContent = '月々の返済額（概算）';
+            }
 
             // Display results — hide papa2, show result
             document.getElementById('papa2Section').classList.add('hidden');
@@ -752,15 +753,16 @@
             });
 
             // Animate the number
-            animateNumber('resultAmount', loanInManyen);
+            animateNumber('resultAmount', Math.round(monthlyPayment));
 
-            document.getElementById('detailMonthly').textContent = formatYen(monthlyRent);
+            document.getElementById('detailLoan').textContent = loanManyen.toLocaleString() + '万円';
             document.getElementById('detailTotal').textContent = formatManyen(totalPayment);
             document.getElementById('detailInterest').textContent = formatManyen(totalInterest);
+            document.getElementById('detailYears').textContent = years + '年（' + totalMonths + '回）';
             document.getElementById('detailMethod').textContent =
                 method === 'ganrikinto' ? '元利均等' : '元金均等';
 
-            // 諸費用（約7%: 融資手数料、保証料、登記費用、火災保険等）
+            // 諸費用（約7%）
             const expenses = loanAmount * 0.07;
             document.getElementById('detailExpenses').textContent = '約 ' + formatManyen(expenses);
         }
@@ -783,10 +785,6 @@
                 }
             }
             requestAnimationFrame(update);
-        }
-
-        function formatYen(amount) {
-            return Math.round(amount).toLocaleString() + '円';
         }
 
         function formatManyen(amount) {
@@ -819,18 +817,6 @@
         // Enter key to calculate
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') calculate();
-        });
-
-        // Toggle rent label based on repayment method
-        document.querySelectorAll('input[name="repaymentType"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                const label = document.getElementById('rentLabel');
-                if (radio.value === 'gankinkinto') {
-                    label.textContent = '初月の返済額';
-                } else {
-                    label.textContent = '現在の家賃';
-                }
-            });
         });
     </script>
 </body>
